@@ -1,0 +1,45 @@
+version: "3.6"
+
+services:
+  influxdb:
+    image: influxdb:2.6.1-alpine
+    container_name: influxdb
+    restart: always
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_INIT_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_INIT_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_INIT_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_INIT_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_INIT_ADMIN_TOKEN}
+    ports:
+      - 8086:8086
+    volumes:
+      - influxdb-storage:/var/lib/influxdb:rw
+
+  telegraf:
+    image: telegraf:1.25.0
+    container_name: telegraf
+    volumes:
+      - ./telegraf.conf:/etc/telegraf/telegraf.conf:rw
+    depends_on:
+      - influxdb
+    ports:
+      - 8125:8125
+
+  grafana:
+    image: grafana/grafana-enterprise:9.3.2
+    container_name: grafana
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_SECURITY_ADMIN_PASSWORD}
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-storage:/var/lib/grafana:rw
+
+volumes:
+  grafana-storage:
+  influxdb-storage:
