@@ -2,6 +2,10 @@
 
 > _Telegraf_ + _InfluxDB_ + _Grafana_ (not [TIG](https://en.wikipedia.org/wiki/Gas_tungsten_arc_welding)).
 
+## Important note
+
+I'm using a Raspberry Pi 3B to run this stack. There are two inputs in the `telegraf.conf` file used to get the temperature and the frequency of the CPU.
+
 ## Before running the stack
 
 1. Rename the `.env.sample` to `.env`, and change the environment variables according to your needs.
